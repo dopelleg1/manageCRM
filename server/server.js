@@ -12,7 +12,13 @@ import { PrismaClient } from '@prisma/client';
 
 dotenv.config();
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL || "mysql://u903659692_P1NYc:M@n2010!@92.113.22.5:3306/u903659692_ooXmo"
+    }
+  }
+});
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'crm-super-secret-key-12345';
