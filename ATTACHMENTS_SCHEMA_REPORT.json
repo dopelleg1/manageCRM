@@ -1,0 +1,67 @@
+{
+  "analysis_report": {
+    "query_parameters": {
+      "target_tables": [
+        "potential_activities",
+        "properties",
+        "commercial_activities",
+        "potential_tobacconists",
+        "telemarketing_contacts"
+      ],
+      "search_terms": [
+        "allegati",
+        "allegati_urls",
+        "allegati_url",
+        "allegati_file",
+        "documents",
+        "attachments"
+      ]
+    },
+    "results": {
+      "potential_activities": {
+        "table_name": "potential_activities",
+        "has_attachment_fields": true,
+        "matched_fields": [
+          {
+            "column_name": "allegati",
+            "data_type": "text",
+            "is_nullable": "YES"
+          }
+        ]
+      },
+      "properties": {
+        "table_name": "properties",
+        "has_attachment_fields": false,
+        "matched_fields": []
+      },
+      "commercial_activities": {
+        "table_name": "commercial_activities",
+        "has_attachment_fields": true,
+        "matched_fields": [
+          {
+            "column_name": "allegati_urls",
+            "data_type": "text",
+            "is_nullable": "YES"
+          }
+        ]
+      },
+      "potential_tobacconists": {
+        "table_name": "potential_tobacconists",
+        "has_attachment_fields": true,
+        "matched_fields": [
+          {
+            "column_name": "allegati",
+            "data_type": "text",
+            "is_nullable": "YES"
+          }
+        ]
+      },
+      "telemarketing_contacts": {
+        "table_name": "telemarketing_contacts",
+        "has_attachment_fields": false,
+        "matched_fields": []
+      }
+    },
+    "summary": "Analysis complete. Found 'allegati' (text) in potential_activities and potential_tobacconists. Found 'allegati_urls' (text) in commercial_activities. No legacy attachment fields were found in properties or telemarketing_contacts. All new attachments are expected to be handled relationally via the 'documents' table."
+  }
+}
