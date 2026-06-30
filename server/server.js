@@ -258,6 +258,19 @@ app.delete('/api/storage/delete/:filename', async (req, res) => {
   }
 });
 
+// --- STATIC FILES SERVING (Single-server deployment) ---
+const DIST_DIR = path.join(__dirname, '../dist');
+app.use(express.static(DIST_DIR));
+
+// Serve index.html for any other route to support client-side routing (React Router)
+app.get('*', (req, res) => {
+  // If request is for an API route that didn't match, return 404
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API route not found' });
+  }
+  res.sendFile(path.join(DIST_DIR, 'index.html'));
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 API Server running on port ${PORT}`);
 });
