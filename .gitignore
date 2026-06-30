@@ -39,6 +39,5 @@ lerna-debug.log*
 
 # Backup and Database utility files
 backup.json
-scripts/import-backup-to-mysql.js
 scripts/test-query.js
 scripts/test-single-agent.js
