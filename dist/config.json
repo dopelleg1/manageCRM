@@ -1,4 +1,4 @@
 {
-  "VITE_DATABASE_PROVIDER": "supabase",
+  "VITE_DATABASE_PROVIDER": "mysql",
   "VITE_API_URL": ""
 }
