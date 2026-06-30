@@ -130,7 +130,7 @@ app.post('/api/auth/signup', async (req, res) => {
 
 // --- GENERIC DATABASE CRUD PORT (SUPABASE EMULATOR) ---
 app.post('/api/db/query', async (req, res) => {
-  const { table, action, data, filters, limit, order, single } = req.body;
+  const { table, action, data, filters, limit, order, single, range } = req.body;
 
   if (!table) {
     return res.status(400).json({ error: 'Table name is required' });
@@ -176,6 +176,10 @@ app.post('/api/db/query', async (req, res) => {
         } else {
           const queryOptions = { where };
           if (limit) queryOptions.take = limit;
+          if (range) {
+            queryOptions.skip = Number(range.from);
+            queryOptions.take = Number(range.to) - Number(range.from) + 1;
+          }
           if (order) {
             queryOptions.orderBy = { [order.column]: order.ascending ? 'asc' : 'desc' };
           }

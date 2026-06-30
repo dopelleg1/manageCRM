@@ -194,6 +194,11 @@ const mysqlClient = {
         return this;
       },
       
+      range: function(from, to) {
+        this.queryRange = { from, to };
+        return this;
+      },
+      
       single: function() {
         this.querySingle = true;
         return this;
@@ -233,7 +238,8 @@ const mysqlClient = {
                 filters: this.filters,
                 limit: this.queryLimit,
                 order: this.queryOrder,
-                single: this.querySingle
+                single: this.querySingle,
+                range: this.queryRange
               })
             });
             
