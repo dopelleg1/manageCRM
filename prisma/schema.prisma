@@ -1,0 +1,329 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model agents {
+  id              String         @id @db.VarChar(36)
+  name            String         @db.Text
+  email           String         @db.VarChar(255)
+  password        String?        @db.VarChar(255) // Hashed password for custom MySQL auth
+  role            String?        @db.VarChar(50)
+  color           String?        @db.VarChar(50)
+  is_master_record Boolean?      @default(false)
+  
+  telemarketing_contacts_assigned telemarketing_contacts[] @relation("AssignedAgent")
+  telemarketing_contacts_operated telemarketing_contacts[] @relation("OperatedAgent")
+  potential_tobacconists          potential_tobacconists[]
+  super_admin_settings_updated    super_admin_settings[]
+  properties                      properties[]
+  commercial_activities           commercial_activities[]
+  potential_activities            potential_activities[]
+  appointments                    appointments[]
+  password_change_logs            password_change_log[]
+  documents                       documents[]
+  assignment_logs_old             assignment_logs[] @relation("OldAgent")
+  assignment_logs_new             assignment_logs[] @relation("NewAgent")
+  assignment_logs_performed       assignment_logs[] @relation("PerformedAgent")
+
+  @@map("agents")
+}
+
+model telemarketing_contacts {
+  id                  String     @id @db.VarChar(36)
+  nome                String?    @db.Text
+  cognome             String?    @db.Text
+  nome_azienda        String?    @db.Text
+  categoria           String?    @db.Text
+  tipologia           String?    @db.Text
+  telefono            String?    @db.Text
+  email               String?    @db.Text
+  citta               String?    @db.Text
+  indirizzo           String?    @db.Text
+  lat                 Decimal?   @db.Decimal(10, 8)
+  lng                 Decimal?   @db.Decimal(11, 8)
+  regione             String?    @db.Text
+  data_ultimo_richiamo DateTime? @db.Date
+  note                String?    @db.Text
+  agente_id           String?    @db.VarChar(36)
+  created_at          DateTime?  @default(now()) @db.DateTime
+  stato               String?    @db.Text
+  anagrafica_type     String?    @db.Text
+  operatore_id        String?    @db.VarChar(36)
+  is_master_record    Boolean?   @default(false)
+  allegati_urls       Json?
+  phone_2             String?    @db.Text
+
+  assigned_agent      agents?     @relation("AssignedAgent", fields: [agente_id], references: [id])
+  operated_agent      agents?     @relation("OperatedAgent", fields: [operatore_id], references: [id])
+  assignment_logs     assignment_logs[]
+
+  @@map("telemarketing_contacts")
+}
+
+model potential_tobacconists {
+  id                  String     @id @db.VarChar(36)
+  nome                String?    @db.Text
+  cognome             String?    @db.Text
+  telefono            String?    @db.Text
+  email               String?    @db.Text
+  indirizzo           String?    @db.Text
+  lat                 Decimal?   @db.Decimal(10, 8)
+  lng                 Decimal?   @db.Decimal(11, 8)
+  citta               String?    @db.Text
+  zona                String?    @db.Text
+  regione             String?    @db.Text
+  agente_id           String?    @db.VarChar(36)
+  categoria           String?    @db.Text
+  caratteristiche     String?    @db.Text
+  stato               String?    @db.Text
+  note                String?    @db.Text
+  data_ultimo_richiamo DateTime? @db.Date
+  created_at          DateTime?  @default(now()) @db.DateTime
+  numero_rivendita    Int?
+  numero_ricevitoria  String?    @db.Text
+  tipo_rivendita      String?    @db.Text
+  distributore        String?    @db.Text
+  data_presa_in_carico DateTime? @db.Date
+  is_master_record    Boolean?   @default(false)
+  allegati_urls       Json?
+  phone_2             String?    @db.Text
+
+  agent               agents?     @relation(fields: [agente_id], references: [id])
+
+  @@map("potential_tobacconists")
+}
+
+model super_admin_settings {
+  id            String     @id @db.VarChar(36)
+  setting_key   String     @db.VarChar(255)
+  setting_value Json?
+  description   String?    @db.Text
+  updated_at    DateTime?  @db.DateTime
+  updated_by    String?    @db.VarChar(36)
+
+  agent         agents?     @relation(fields: [updated_by], references: [id])
+
+  @@map("super_admin_settings")
+}
+
+model properties {
+  id                   String     @id @db.VarChar(36)
+  codice               String     @db.VarChar(255)
+  categoria            String?    @db.Text
+  tipologia            String?    @db.Text
+  agente_id            String?    @db.VarChar(36)
+  citta                String?    @db.Text
+  indirizzo            String?    @db.Text
+  lat                  Decimal?   @db.Decimal(10, 8)
+  lng                  Decimal?   @db.Decimal(11, 8)
+  zona                 String?    @db.Text
+  regione              String?    @db.Text
+  prezzo               Decimal?   @db.Decimal(15, 2)
+  created_at           DateTime?  @default(now()) @db.DateTime
+  mq                   Int?
+  locali               Int?
+  bagni                Int?
+  caratteristiche      Json?
+  nome_proprietario    String?    @db.Text
+  cognome_proprietario String?    @db.Text
+  telefono_proprietario String?   @db.Text
+  email_proprietario   String?    @db.Text
+  note                 String?    @db.Text
+  scadenza_mandato     DateTime?  @db.Date
+  data_richiamo        DateTime?  @db.Date
+  stato                String?    @db.Text
+  numero               Int?
+  is_master_record     Boolean?   @default(false)
+  allegati_urls        Json?
+  phone_2              String?    @db.Text
+
+  agent                agents?     @relation(fields: [agente_id], references: [id])
+
+  @@map("properties")
+}
+
+model commercial_activities {
+  id                   String     @id @db.VarChar(36)
+  categoria            String?    @db.Text
+  agente_id            String?    @db.VarChar(36)
+  citta                String?    @db.Text
+  indirizzo            String?    @db.Text
+  lat                  Decimal?   @db.Decimal(10, 8)
+  lng                  Decimal?   @db.Decimal(11, 8)
+  zona                 String?    @db.VarChar(255)
+  regione              String?    @db.Text
+  aggi                 Decimal?   @db.Decimal(15, 2)
+  ricavo               Decimal?   @db.Decimal(15, 2)
+  prezzo               Decimal?   @db.Decimal(15, 2)
+  mq                   Int?
+  nome_proprietario    String?    @db.Text
+  cognome_proprietario String?    @db.Text
+  telefono_proprietario String?   @db.Text
+  email_proprietario   String?    @db.Text
+  note                 String?    @db.Text
+  scadenza_mandato     DateTime?  @db.Date
+  data_richiamo        DateTime?  @db.Date
+  vetrina              DateTime?  @db.Date
+  stato                String?    @db.VarChar(255)
+  created_at           DateTime?  @default(now()) @db.DateTime
+  codice               String?    @db.VarChar(255)
+  numero               Int?
+  allegati_urls        Json?
+  is_master_record     Boolean?   @default(false)
+  phone_2              String?    @db.Text
+
+  agent                agents?     @relation(fields: [agente_id], references: [id])
+
+  @@map("commercial_activities")
+}
+
+model potential_activities {
+  id                      String     @id @db.VarChar(36)
+  type                    String     @db.VarChar(50)
+  nome                    String?    @db.Text
+  cognome                 String?    @db.Text
+  telefono                String?    @db.Text
+  email                   String?    @db.Text
+  indirizzo               String?    @db.Text
+  lat                     Decimal?   @db.Decimal(10, 8)
+  lng                     Decimal?   @db.Decimal(11, 8)
+  citta                   String?    @db.Text
+  zona                    String?    @db.Text
+  regione                 String?    @db.Text
+  agente_id               String?    @db.VarChar(36)
+  note                    String?    @db.Text
+  data_richiamo           DateTime?  @db.Date
+  created_at              DateTime?  @default(now()) @db.DateTime
+  budget                  Decimal?   @db.Decimal(15, 2)
+  locali                  Int?
+  mq                      Int?
+  bagni                   Int?
+  aggi                    String?    @db.Text
+  ricavo                  Decimal?   @db.Decimal(15, 2)
+  categoria               String?    @db.Text
+  caratteristiche         String?    @db.Text
+  stato_presa_in_carico   String?    @db.Text
+  numero                  Int?
+  stato                   String?    @db.Text
+  anagrafica_type         String?    @db.Text
+  locali_min              Int?
+  locali_max              Int?
+  mq_min                  Int?
+  mq_max                  Int?
+  bagni_status            String?    @db.Text
+  arredo                  String?    @db.Text
+  stato_prima_visita      String?    @db.Text
+  stato_prima_visita_data DateTime?  @db.Date
+  is_master_record        Boolean?   @default(false)
+  allegati_urls           Json?
+  phone_2                 String?    @db.Text
+
+  agent                   agents?     @relation(fields: [agente_id], references: [id])
+
+  @@map("potential_activities")
+}
+
+model appointments {
+  id                String     @id @db.VarChar(36)
+  title             String     @db.Text
+  start_time        DateTime   @db.DateTime
+  end_time          DateTime   @db.DateTime
+  agente_id         String?    @db.VarChar(36)
+  related_record_id String?    @db.VarChar(36)
+  related_table     String?    @db.Text
+  created_at        DateTime?  @default(now()) @db.DateTime
+
+  agent             agents?     @relation(fields: [agente_id], references: [id])
+
+  @@map("appointments")
+}
+
+model configurations {
+  id         String    @id @db.VarChar(36)
+  type       String    @db.VarChar(255)
+  value      String    @db.Text
+  created_at DateTime? @default(now()) @db.DateTime
+
+  @@map("configurations")
+}
+
+model password_change_log {
+  id             String    @id @db.VarChar(36)
+  changed_by_id  String?   @db.VarChar(36)
+  user_id        String    @db.VarChar(36)
+  changed_at     DateTime  @db.DateTime
+  ip_address     String?   @db.Text
+  user_agent     String?   @db.Text
+
+  agent          agents?    @relation(fields: [changed_by_id], references: [id])
+
+  @@map("password_change_log")
+}
+
+model documents {
+  id          String    @id @db.VarChar(36)
+  record_id   String    @db.VarChar(36)
+  table_name  String    @db.VarChar(255)
+  file_name   String    @db.VarChar(255)
+  file_path   String    @db.VarChar(255)
+  file_type   String?   @db.VarChar(255)
+  file_size   BigInt?
+  uploaded_by String?   @db.VarChar(36)
+  created_at  DateTime  @default(now()) @db.DateTime
+
+  agent       agents?    @relation(fields: [uploaded_by], references: [id])
+
+  @@map("documents")
+}
+
+model assignment_logs {
+  id               String     @id @db.VarChar(36)
+  telemarketing_id String?    @db.VarChar(36)
+  old_agent_id     String?    @db.VarChar(36)
+  new_agent_id     String?    @db.VarChar(36)
+  action           String     @db.Text
+  performed_by     String?    @db.VarChar(36)
+  performed_at     DateTime?  @default(now()) @db.DateTime
+  notes            String?    @db.Text
+
+  contact          telemarketing_contacts? @relation(fields: [telemarketing_id], references: [id])
+  old_agent        agents?     @relation("OldAgent", fields: [old_agent_id], references: [id])
+  new_agent        agents?     @relation("NewAgent", fields: [new_agent_id], references: [id])
+  performed_agent  agents?     @relation("PerformedAgent", fields: [performed_by], references: [id])
+
+  @@map("assignment_logs")
+}
+
+model duplicate_deletion_logs {
+  id                 String    @id @db.VarChar(36)
+  table_name         String    @db.Text
+  deleted_record_id  String?   @db.VarChar(36)
+  master_record_id   String?   @db.VarChar(36)
+  deleted_at         DateTime? @default(now()) @db.DateTime
+  deleted_by         String?   @db.VarChar(36)
+  notes              String?   @db.Text
+
+  @@map("duplicate_deletion_logs")
+}
+
+model backups {
+  id             String    @id @db.VarChar(36)
+  version        String    @db.VarChar(50)
+  type           String    @db.VarChar(50)
+  date           DateTime? @db.DateTime
+  size           BigInt?
+  status         String?   @db.VarChar(50)
+  created_by     String?   @db.VarChar(36)
+  storage_path   String?   @db.Text
+  is_master_record Boolean? @default(false)
+  last_restored  DateTime? @db.DateTime
+  restore_count  Int?
+  notes          String?   @db.Text
+
+  @@map("backups")
+}
