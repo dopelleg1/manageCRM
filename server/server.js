@@ -269,7 +269,7 @@ const DIST_DIR = path.join(__dirname, '../dist');
 app.use(express.static(DIST_DIR));
 
 // Serve index.html for any other route to support client-side routing (React Router)
-app.get('/:all*', (req, res) => {
+app.use((req, res) => {
   // If request is for an API route that didn't match, return 404
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'API route not found' });
